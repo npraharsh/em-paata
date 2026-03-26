@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Em Paata</title>
+
+<style>
+:root{
+  --bg:#0f0f0f;
+  --card:#1a1a1a;
+  --card-2:#222;
+  --text:#ffffff;
+  --muted:#b3b3b3;
+  --accent:#ff2e63;
+  --accent-2:#ff5a85;
+  --tile:#333;
+  --wrong:#444;
+  --correct:#00d68f;
+  --shadow:0 0 24px rgba(255, 46, 99, 0.18);
+  --radius:18px;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html, body{
+  margin:0;
+  padding:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Segoe UI',sans-serif;
+}
+
+body{
+  min-height:100svh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px 14px;
+}
+
+.container{
+  width:min(100%, 440px);
+  background:linear-gradient(180deg, #1b1b1b 0%, #151515 100%);
+  padding:20px;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  border:1px solid rgba(255,255,255,0.05);
+}
+
+.header{
+  text-align:center;
+  margin-bottom:14px;
+}
+
+h1{
+  margin:0;
+  font-size:clamp(1.8rem, 6vw, 2.3rem);
+  color:var(--accent);
+  letter-spacing:0.3px;
+}
+
+.subtitle{
+  margin-top:6px;
+  color:var(--muted);
+  font-size:0.95rem;
+}
+
+.progress{
+  display:flex;
+  gap:6px;
+  margin:16px 0 14px;
+}
+
+.bar{
+  flex:1;
+  height:8px;
+  background:#2c2c2c;
+  border-radius:999px;
+  transition:background 0.25s ease, transform 0.25s ease;
+}
+
+.bar.active{
+  background:var(--accent);
+}
+
+.waveWrap{
+  min-height:28px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin:6px 0 10px;
+}
+
+/* waveform */
+.wave{
+  display:flex;
+  justify-content:center;
+  gap:4px;
+}
+
+.wave div{
+  width:5px;
+  height:10px;
+  border-radius:999px;
+  background:var(--accent);
+  animation:wave 1s infinite ease-in-out;
+}
+
+.wave div:nth-child(2){ animation-delay:0.15s; }
+.wave div:nth-child(3){ animation-delay:0.30s; }
+.wave div:nth-child(4){ animation-delay:0.45s; }
+.wave div:nth-child(5){ animation-delay:0.60s; }
+
+@keyframes wave{
+  0%,100%{ height:7px; opacity:0.7; }
+  50%{ height:22px; opacity:1; }
+}
+
+.controls{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-bottom:14px;
+}
+
+button{
+  appearance:none;
+  border:none;
+  border-radius:12px;
+  background:var(--accent);
+  color:white;
+  cursor:pointer;
+  padding:12px 14px;
+  font-size:1rem;
+  font-weight:600;
+  transition:transform 0.15s ease, background 0.2s ease, opacity 0.2s ease;
+}
+
+button:hover{
+  background:var(--accent-2);
+}
+
+button:active{
+  transform:scale(0.98);
+}
+
+button.secondary{
+  background:#2a2a2a;
+  color:#fff;
+}
+
+button.secondary:hover{
+  background:#353535;
+}
+
+.fields{
+  display:grid;
+  gap:10px;
+}
+
+input{
+  width:100%;
+  padding:13px 14px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.06);
+  background:#242424;
+  color:white;
+  font-size:1rem;
+  outline:none;
+  transition:border-color 0.2s ease, background 0.2s ease;
+}
+
+input::placeholder{
+  color:#9a9a9a;
+}
+
+input:focus{
+  border-color:rgba(255,46,99,0.8);
+  background:#2a2a2a;
+}
+
+#submitBtn,
+#shareBtn{
+  width:100%;
+  margin-top:12px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:14px;
+}
+
+.tile{
+  aspect-ratio:1 / 1;
+  min-height:54px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:var(--tile);
+  border-radius:10px;
+  transform:rotateX(90deg);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.04);
+}
+
+.tile.flip{
+  animation:flip 0.5s forwards;
+}
+
+@keyframes flip{
+  to{ transform:rotateX(0deg); }
+}
+
+.correct{ background:var(--correct); }
+.wrong{ background:var(--wrong); }
+
+.result{
+  text-align:center;
+  margin-top:14px;
+  min-height:24px;
+  font-size:1rem;
+  color:#f4f4f4;
+}
+
+.footerHint{
+  text-align:center;
+  color:var(--muted);
+  font-size:0.88rem;
+  margin-top:10px;
+}
+
+@media (max-width: 480px){
+  body{
+    align-items:flex-start;
+    padding:12px;
+  }
+
+  .container{
+    width:100%;
+    padding:16px;
+    border-radius:16px;
+    margin-top:8px;
+  }
+
+  .controls{
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+
+  button{
+    padding:13px 10px;
+    font-size:0.98rem;
+  }
+
+  .grid{
+    gap:7px;
+  }
+
+  .tile{
+    min-height:50px;
+  }
+}
+
+@media (max-width: 360px){
+  h1{
+    font-size:1.6rem;
+  }
+
+  .subtitle{
+    font-size:0.88rem;
+  }
+
+  input, button{
+    font-size:0.95rem;
+  }
+
+  .tile{
+    min-height:46px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>🎵 Em Paata</h1>
+    <div class="subtitle">Guess the song, movie, and hero</div>
+  </div>
+
+  <div class="progress" id="progress"></div>
+
+  <div class="waveWrap">
+    <div class="wave" id="wave" style="display:none">
+      <div></div><div></div><div></div><div></div><div></div>
+    </div>
+  </div>
+
+  <audio id="player"></audio>
+
+  <div class="controls">
+    <button id="playBtn">▶ Play</button>
+    <button id="skipBtn" class="secondary">Skip</button>
+  </div>
+
+  <div class="fields">
+    <input id="songInput" placeholder="Song">
+    <input id="movieInput" placeholder="Movie">
+    <input id="heroInput" placeholder="Hero">
+  </div>
+
+  <button id="submitBtn">Submit</button>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="result" id="resultBox"></div>
+
+  <button id="shareBtn" style="display:none">Share</button>
+
+  <div class="footerHint">New puzzle every day</div>
+</div>
+
+<script>
+// ================= DATA =================
+const songs = [
+  {
+    title:"Samajavaragamana",
+    movie:"Ala Vaikunthapurramuloo",
+    hero:["Allu Arjun"],
+    audio:"songs/samajavaragamana.mp3"
+  },
+  {
+    title:"Hoyna Hoyna",
+    movie:"Gang Leader",
+    hero:["Nani"],
+    audio:"songs/hoyna.mp3"
+  },
+  {
+    title:"Kanulanu Thaake",
+    movie:"Manam",
+    hero:["Nagarjuna","Naga Chaitanya","ANR"],
+    audio:"songs/kanulanu.mp3"
+  }
+];
+
+// ================= DAILY PUZZLE =================
+function getDailyIndex(){
+  const start = new Date(2024,0,1);
+  const today = new Date();
+  const diff = Math.floor((today - start) / 86400000);
+  return diff % songs.length;
+}
+
+const currentSong = songs[getDailyIndex()];
+player.src = currentSong.audio;
+
+// ================= STATE =================
+const state = {
+  round:0,
+  tries:0,
+  finished:false,
+  stopTimer:null,
+  history:[]
+};
+
+const clipDurations = [1,2,4,7,11,16];
+
+// ================= UTIL =================
+const norm = s => s.trim().toLowerCase();
+
+function match(a,b){
+  a = norm(a);
+  b = norm(b);
+  return a === b || a.includes(b) || b.includes(a);
+}
+
+// ================= AUDIO =================
+async function playClip(){
+  if(state.finished) return;
+
+  clearTimeout(state.stopTimer);
+  wave.style.display = "flex";
+
+  player.pause();
+  player.currentTime = 0;
+
+  try{
+    await player.play();
+  } catch {
+    resultBox.innerHTML = "Audio could not play.";
+    wave.style.display = "none";
+    return;
+  }
+
+  state.stopTimer = setTimeout(() => {
+    player.pause();
+    player.currentTime = 0;
+    wave.style.display = "none";
+  }, clipDurations[state.round] * 1000);
+}
+
+// ================= GRID =================
+function addRow(results){
+  results.forEach((r, i) => {
+    const tile = document.createElement("div");
+    tile.className = "tile";
+    setTimeout(() => {
+      tile.classList.add("flip");
+      tile.classList.add(r ? "correct" : "wrong");
+    }, i * 180);
+    grid.appendChild(tile);
+  });
+
+  state.history.push(results);
+}
+
+// ================= GUESS =================
+function submit(){
+  if(state.finished) return;
+
+  const res = [
+    match(songInput.value, currentSong.title),
+    match(movieInput.value, currentSong.movie),
+    currentSong.hero.some(h => match(heroInput.value, h))
+  ];
+
+  addRow(res);
+
+  if(res.every(Boolean)){
+    state.finished = true;
+    resultBox.innerHTML = "🎉 Perfect!";
+    shareBtn.style.display = "block";
+    return;
+  }
+
+  state.tries++;
+  state.round++;
+  updateBars();
+
+  if(state.tries >= 6){
+    state.finished = true;
+    resultBox.innerHTML = `❌ ${currentSong.title}`;
+    shareBtn.style.display = "block";
+  }
+}
+
+// ================= SHARE =================
+function share(){
+  let text = "Em Paata\n";
+
+  state.history.forEach(row => {
+    row.forEach(c => {
+      text += c ? "🟩" : "⬛";
+    });
+    text += "\n";
+  });
+
+  navigator.clipboard.writeText(text);
+  alert("Copied to clipboard!");
+}
+
+// ================= PROGRESS =================
+for(let i = 0; i < 6; i++){
+  const b = document.createElement("div");
+  b.className = "bar";
+  progress.appendChild(b);
+}
+
+function updateBars(){
+  document.querySelectorAll(".bar")
+    .forEach((b, i) => b.classList.toggle("active", i <= state.round));
+}
+
+// ================= EVENTS =================
+playBtn.onclick = playClip;
+submitBtn.onclick = submit;
+skipBtn.onclick = () => {
+  if(state.finished) return;
+  state.tries++;
+  state.round++;
+  updateBars();
+
+  if(state.tries >= 6){
+    state.finished = true;
+    resultBox.innerHTML = `❌ ${currentSong.title}`;
+    shareBtn.style.display = "block";
+  }
+};
+shareBtn.onclick = share;
+
+updateBars();
+</script>
+
+</body>
+</html>
